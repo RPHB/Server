@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 var connection = mysql.createConnection({
-    host     : 'http://xenowarehouse13.myqnapcloud.com/',
+    host     : 'http://xenowarehouse13.myqnapcloud.com',
     user     : 'root',
     password : 'admin',
     database : 'ps'
