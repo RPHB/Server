@@ -2,7 +2,7 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
     host     : 'http://xenowarehouse13.myqnapcloud.com',
     user     : 'root',
-    password : 'admin',
+    password : 'oM0deithe9ieCheibieJongei0vaiS1c',
     database : 'ps',
     port : 32768,
 });
