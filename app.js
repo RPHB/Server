@@ -9,6 +9,10 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var match = require('./routes/match');
 var friends = require('./routes/friends');
+var teams = require('./routes/teams');
+var bets = require('./routes/bets');
+var events = require('./routes/events');
+var sport = require('./routes/sports');
 
 var app = express();
 
