@@ -35,6 +35,10 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/match', match);
 app.use('/friends', friends);
+app.use('/teams', teams);
+app.use('/bets', bets);
+app.use('/events', events);
+app.use('/sports', sports);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -98,7 +98,7 @@ router.post('/create/:pseudo/:pwd/:email', function(request, res, next) {
 	var email = request.params.email;
 	function getLastRecord(pseudo,pwd, email){
 		return new Promise(function(resolve, reject) {
-			var sql = "insert into users(username, pwd, email) values('"+pseudo+"','"+pwd+"','"+email+"');";
+			var sql = "insert into users(username, pwd, email, tokens, admin) values('"+pseudo+"','"+pwd+"','"+email+"', 500, 0);";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
