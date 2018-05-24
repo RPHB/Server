@@ -49,12 +49,13 @@ router.get('/getAll', function(request, res, next) {
 });
 
 /* UPDATE user with id */
-router.put('/update/:id/:name', function(request, res, next) {
+router.put('/update/:id/:name/:sport', function(request, res, next) {
 	var id = request.params.id;
 	var name = request.params.name;
+	var sport = request.params.sport;
 	function getLastRecord(id, name) {
 		return new Promise(function(resolve, reject) {
-			var sql = "update teams set name='"+name+" where id = "+id+";";
+			var sql = "update teams set name='"+name+", sport='"+sport+"' where id = "+id+";";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
@@ -81,11 +82,11 @@ router.delete('/delete/:id', function(request, res, next) {
 
 
 /* POST create user */
-router.post('/create/:name', function(request, res, next) {
+router.post('/create/:name/:sport', function(request, res, next) {
 	var name = request.params.name;
 	function getLastRecord(name){
 		return new Promise(function(resolve, reject) {
-			var sql = "insert into teams(name) values('"+name+"');";
+			var sql = "insert into teams(name,sport) values('"+name+"','"+sport+"');";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);

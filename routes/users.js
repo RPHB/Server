@@ -91,6 +91,26 @@ router.get('/connect/:pseudo/:pwd', function(request, res, next) {
 	});
 });
 
+router.get('/webconnect/:pseudo/:pwd', function(request, res, next) {
+	var pseudo = request.params.pseudo;
+	var pwd = md5(request.params.pwd);
+	function getLastRecord(pseudo) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from users where username='"+pseudo+"' AND admin=1;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord(pseudo).then(function(rows){
+		if (rows["0"].pwd == pwd)
+			res.send("true");
+		else
+			res.send("false");
+	});
+});
+
 /* POST create user */
 router.post('/create/:pseudo/:pwd/:email', function(request, res, next) {
 	var pseudo = request.params.pseudo;

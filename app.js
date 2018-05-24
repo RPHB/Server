@@ -13,6 +13,7 @@ var teams = require('./routes/teams');
 var bets = require('./routes/bets');
 var events = require('./routes/events');
 var sports = require('./routes/sports');
+var statistics = require('./routes/statistics');
 
 var app = express();
 
@@ -43,6 +44,7 @@ app.use('/teams', teams);
 app.use('/bets', bets);
 app.use('/events', events);
 app.use('/sports', sports);
+app.use('/statistics', statistics);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

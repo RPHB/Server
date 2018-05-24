@@ -33,26 +33,27 @@ router.get('/getAll', function(request, res, next) {
 });
 
 /* POST create bets */
-router.post('/create/:idMatch/:idUser/:tokens/:choise/:date', function(request, res, next) {
+router.post('/create/:idMatch/:idUser/:tokens/:choice/:date/:sport', function(request, res, next) {
   var idMatch = request.params.idMatch;
   var idUser = request.params.idUser;
   var tokens = request.params.tokens;
   var choise = request.params.choise;
   var date = request.params.date;
+	var sport = request.params.sport;
 	function getLastRecord(idMatch, idUser, tokens, choise, date){
 		return new Promise(function(resolve, reject) {
-			var sql = "insert into bets(idMatch, idUser, tokens, choise, date, isPayed) values('"+idMatch+"', '"+idUser+"', '"+tokens+"', '"+choise+"', '"+date+"', '0');";
+			var sql = "insert into bets(idMatch, idUser, tokens, choice, date, isPayed, sport) values('"+idMatch+"', '"+idUser+"', '"+tokens+"', '"+choice+"', '"+date+"', '0', '"+sport+"');";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
 	}
-	getLastRecord(idMatch, idUser, tokens, choise, date).then(function(rows){ res.send(rows); });
+	getLastRecord(idMatch, idUser, tokens, choice, date).then(function(rows){ res.send(rows); });
 });
 
 /* UPDATE bets with id */
-router.put('/update/:id/:tokens/:choise/:date/:isPayed', function(request, res, next) {
+router.put('/update/:id/:tokens/:choice/:date/:isPayed/:sport', function(request, res, next) {
 	var id = request.params.id;
   var tokens = request.params.tokens;
   var choise = request.params.choise;
@@ -60,14 +61,14 @@ router.put('/update/:id/:tokens/:choise/:date/:isPayed', function(request, res, 
   var isPayed = request.params.isPayed;
 	function getLastRecord(id, tokens, choise, date, isPayed) {
 		return new Promise(function(resolve, reject) {
-			var sql = "update bets set tokens='"+tokens+", choise='"+choise+", date='"+date+", isPayed='"+isPayed+" where id = "+id+";";
+			var sql = "update bets set tokens='"+tokens+", choice='"+choice+", date='"+date+", isPayed='"+isPayed+", sport='"+sport+"' where id = "+id+";";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
 			  });
 			});
 	}
-	getLastRecord(id, tokens, choise, date, isPayed).then(function(rows){ res.send(rows); });
+	getLastRecord(id, tokens, choice, date, isPayed).then(function(rows){ res.send(rows); });
 });
 
 /* DELETE bets with id */
