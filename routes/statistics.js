@@ -30,6 +30,19 @@ router.get('/getAllBetsNumber', function(request, res, next) {
 	getLastRecord().then(function(rows){ res.send(rows[0]); });
 });
 
+router.get('/getAllMatchsNumber', function(request, res, next) {
+	function getLastRecord() {
+		return new Promise(function(resolve, reject) {
+			var sql = "select count(*) FROM matchs;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+	  });
+	}
+	getLastRecord().then(function(rows){ res.send(rows[0]); });
+});
+
 router.get('/getAllBetsBySport', function(request, res, next) {
 	var id = request.params.name;
 	function getLastRecord(id) {

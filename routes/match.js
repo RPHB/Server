@@ -7,10 +7,28 @@ var json2html = require('html2json').json2html;
 var async = require('async');
 var fs = require("fs");
 
+var con = require('./connexionDatabase.js');
+
+
+/* GET all sport */
+router.get('/getAll', function(request, res, next) {
+	function getLastRecord() {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from matchs;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord().then(function(rows){ res.send(rows); });
+});
+
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
 	var teamListHTML = fs.readFileSync("teamList.txt", "UTF-8");
-	
+
 	var teamListJSON = html2json(teamListHTML);
 
 	var teamListJSON = teamListJSON.child;
@@ -36,9 +54,9 @@ router.get('/', function(req, res, next) {
 	// var resultSize=Object.keys(resultJson).length;
 	// resultJson.length=resultSize;
 	res.send(resultJson)
-	
+
 })
-	
+
 
 router.get('/:team_id', function(req, res, next) {
 	request('http://www.foot-national.com/partage.php?type=3&id='+req.params.team_id).then(function(response){
@@ -50,7 +68,7 @@ router.get('/:team_id', function(req, res, next) {
 		var sizeTableauScore=tableauScore.length
 		for (var i = 0; i < sizeTableauScore; ++i)
 		{
-			
+
 			var currChild=tableauScore[i].child;
 			if (currChild)
 			{
@@ -59,14 +77,14 @@ router.get('/:team_id', function(req, res, next) {
 				if (currChild[2])
 				{
 					if (currChild[2].child)
-					{	
+					{
 						result+='"child'+cpt+'":{';
 						result+='"date":"'+currChild[2].child["0"].text+'",';
 						result+='"match":"'+currChild[4].child["1"].child["0"].text+'",';
 						result+='"score":"'+currChild[5].child["0"].child["0"].text+'"';
 						result+="},";
 						++cpt;
-						
+
 					}
 				}
 
@@ -82,7 +100,10 @@ router.get('/:team_id', function(req, res, next) {
 		console.log(result);
 		res.send(result);
 	})
-	
+
 });
+
+
+
 
 module.exports = router;
