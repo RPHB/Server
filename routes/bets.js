@@ -18,6 +18,20 @@ router.get('/get/:id', function(request, res, next) {
 	getLastRecord(id).then(function(rows){ res.send(rows); });
 });
 
+router.get('/getForUser/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from bets where idUser='"+id+"' order by date;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+	  });
+	}
+	getLastRecord(id).then(function(rows){ res.send(rows); });
+});
+
 /* GET all bets */
 router.get('/getAll', function(request, res, next) {
 	function getLastRecord() {
