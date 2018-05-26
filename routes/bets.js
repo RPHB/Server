@@ -51,7 +51,7 @@ router.post('/create/:idMatch/:idUser/:tokens/:choice/:date/:sport', function(re
   var idMatch = request.params.idMatch;
   var idUser = request.params.idUser;
   var tokens = request.params.tokens;
-  var choise = request.params.choise;
+  var choice = request.params.choice;
   var date = request.params.date;
 	var sport = request.params.sport;
 	function getLastRecord(idMatch, idUser, tokens, choise, date){
@@ -70,7 +70,7 @@ router.post('/create/:idMatch/:idUser/:tokens/:choice/:date/:sport', function(re
 router.put('/update/:id/:tokens/:choice/:date/:isPayed/:sport', function(request, res, next) {
 	var id = request.params.id;
   var tokens = request.params.tokens;
-  var choise = request.params.choise;
+  var choice = request.params.choice;
   var date = request.params.date;
   var isPayed = request.params.isPayed;
 	function getLastRecord(id, tokens, choise, date, isPayed) {
