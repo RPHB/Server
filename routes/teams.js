@@ -20,7 +20,7 @@ router.get('/getTeamName/:id', function(request, res, next) {
 
 /* GET id with name */
 router.get('/getId/:name', function(request, res, next) {
-	var id = request.params.name;
+	var name = request.params.name;
 	function getLastRecord(name) {
 		return new Promise(function(resolve, reject) {
 			var sql = "select id from teams where name = '"+name+"';";

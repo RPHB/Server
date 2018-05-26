@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:3306
--- Généré le :  lun. 14 mai 2018 à 22:08
+-- Généré le :  sam. 26 mai 2018 à 13:50
 -- Version du serveur :  5.6.35
 -- Version de PHP :  7.1.6
 
@@ -27,8 +27,19 @@ CREATE TABLE `bets` (
   `tokens` int(11) NOT NULL,
   `choice` int(11) NOT NULL,
   `date` date NOT NULL,
-  `isPayed` int(11) NOT NULL
+  `isPayed` int(11) NOT NULL,
+  `sport` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `bets`
+--
+
+INSERT INTO `bets` (`id`, `idMatch`, `idUser`, `tokens`, `choice`, `date`, `isPayed`, `sport`) VALUES
+(1, 2, 2, 120, 0, '2018-05-22', 0, 0),
+(2, 3, 2, 110, 1, '2018-05-25', 0, 1),
+(3, 4, 2, 50, 3, '2018-05-20', 0, 0),
+(4, 6, 2, 10, 2, '2018-05-25', 0, 3);
 
 -- --------------------------------------------------------
 
@@ -57,20 +68,18 @@ CREATE TABLE `matchs` (
   `quotation3` double NOT NULL,
   `score` varchar(250) NOT NULL,
   `result` int(11) NOT NULL,
-  `idSport` int(11) NOT NULL,
+  `sport` int(11) NOT NULL,
   `idEvent` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
 --
--- Structure de la table `sports`
+-- Déchargement des données de la table `matchs`
 --
 
-CREATE TABLE `sports` (
-  `id` int(11) NOT NULL,
-  `name` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `matchs` (`id`, `idTeam1`, `idTeam2`, `date`, `quotation1`, `quotation2`, `quotation3`, `score`, `result`, `sport`, `idEvent`) VALUES
+(2, 1, 2, '2018-05-26', 1.1, 1.2, 2.1, '-', 0, 0, 0),
+(3, 7, 4, '2018-05-28', 3.1, 2, 1.3, '-', 0, 1, 2),
+(4, 2, 1, '2018-05-31', 1.2, 1.9, 2.4, '-', 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -81,8 +90,18 @@ CREATE TABLE `sports` (
 CREATE TABLE `teams` (
   `id` int(11) NOT NULL,
   `name` varchar(250) NOT NULL,
-  `idSport` int(11) NOT NULL
+  `sport` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Déchargement des données de la table `teams`
+--
+
+INSERT INTO `teams` (`id`, `name`, `sport`) VALUES
+(1, 'Paris-Saint-Germain', 0),
+(2, 'Lyon', 0),
+(3, 'Marseille', 0),
+(4, 'Barcelone', 0);
 
 -- --------------------------------------------------------
 
@@ -104,8 +123,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `pwd`, `email`, `admin`, `tokens`) VALUES
-(1, 'xenodeux', '3ed7dceaf266cafef032b9d5db224717', 'bastien@gmail.com', 1, 0),
-(2, 'Jean', '8cb4f88ffd80dac9c59859dcea8e2ae4', 'Jean@gmail.com', 0, 0);
+(2, 'Jean', '8cb4f88ffd80dac9c59859dcea8e2ae4', 'Jean@gmail.com', 1, 0),
+(3, 'Xenodeux', 'ed735d55415bee976b771989be8f7005', 'Bastien@gmail.com', 0, 500),
+(5, 'Cromade', 'ed735d55415bee976b771989be8f7005', 'Dylan@gmail.com', 0, 500);
 
 -- --------------------------------------------------------
 
@@ -143,12 +163,6 @@ ALTER TABLE `matchs`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `sports`
---
-ALTER TABLE `sports`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Index pour la table `teams`
 --
 ALTER TABLE `teams`
@@ -174,7 +188,7 @@ ALTER TABLE `user_friends`
 -- AUTO_INCREMENT pour la table `bets`
 --
 ALTER TABLE `bets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT pour la table `events`
 --
@@ -184,19 +198,14 @@ ALTER TABLE `events`
 -- AUTO_INCREMENT pour la table `matchs`
 --
 ALTER TABLE `matchs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT pour la table `sports`
---
-ALTER TABLE `sports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT pour la table `teams`
 --
 ALTER TABLE `teams`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
