@@ -70,6 +70,7 @@ router.delete('/delete/:id', function(request, res, next) {
 router.get('/connect/:pseudo/:pwd', function(request, res, next) {
 	var pseudo = request.params.pseudo;
 	var pwd = md5(request.params.pwd);
+	// var pwd = request.params.pwd;
 	console.log(pseudo + " " + pwd);
 	function getLastRecord(pseudo) {
 		return new Promise(function(resolve, reject) {
@@ -81,13 +82,20 @@ router.get('/connect/:pseudo/:pwd', function(request, res, next) {
 		});
 	}
 	getLastRecord(pseudo).then(function(rows){
+		
+		if (!rows["0"])
+		{
+			console.log("falseUSER")
+			res.send("falseUSER");
+			return;
+		}
 		console.log("rows = " + JSON.stringify(rows))
 		console.log("pwd = " + pwd)
 		console.log("BASEpwd = " + rows["0"].pwd)
 		if (rows["0"].pwd == pwd)
 			res.send("true");
 		else
-			res.send("false");
+			res.send("falsePwd");
 	});
 });
 
@@ -112,7 +120,7 @@ router.get('/webconnect/:pseudo/:pwd', function(request, res, next) {
 });
 
 /* POST create user */
-router.post('/create/:pseudo/:pwd/:email', function(request, res, next) {
+router.get('/create/:pseudo/:pwd/:email', function(request, res, next) {
 	var pseudo = request.params.pseudo;
 	var pwd = md5(request.params.pwd);
 	var email = request.params.email;
@@ -120,12 +128,32 @@ router.post('/create/:pseudo/:pwd/:email', function(request, res, next) {
 		return new Promise(function(resolve, reject) {
 			var sql = "insert into users(username, pwd, email, tokens, admin) values('"+pseudo+"','"+pwd+"','"+email+"', 500, 0);";
 			con.query(sql, function (err, rows, fields) {
-				if (err) return reject(err);
+				if (err)
+				{
+					// console.log("err")
+					// console.log(err)
+					// console.log("err")
+					return resolve(err);
+				}
 				resolve(rows);
 			});
 		});
 	}
-	getLastRecord(pseudo, pwd, email).then(function(rows){ res.send(rows); });
+	getLastRecord(pseudo, pwd, email).then(function(rows){
+		var error = rows["sqlMessage"];
+		if (error)
+		{
+			console.log(error)
+			if (error.indexOf("username") >= 0)
+				res.send("duplicatePseudo")
+			else if (error.indexOf("email") >= 0)
+				res.send("duplicateEmail")
+		}
+		else
+		{
+			res.send("true");
+		}
+	});
 });
 
 router.post('/changPwd/:pseudo/:pwd/:newPwd', function(request, res, next) {
