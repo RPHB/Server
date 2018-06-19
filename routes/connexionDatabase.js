@@ -1,19 +1,24 @@
 var mysql = require('mysql');
 
-var connection = mysql.createConnection({
-    host     : 'localhost',
+var connection;
+var devMod=0
+if (devMod===1)
+{
+	connection = mysql.createConnection({
+		host     : 'localhost',
+		user     : 'root',
+		password : '',
+		database : 'beyourbet',
+	});
+}
+else{
+	connection = mysql.createConnection({
+    host     : 'xenowarehouse13.myqnapcloud.com',
     user     : 'root',
-    password : '',
-    database : 'beyourbet',
-});
-
-
-// var connection = mysql.createConnection({
-    // host     : 'xenowarehouse13.myqnapcloud.com',
-    // user     : 'root',
-    // password : 'oM0deithe9ieCheibieJongei0vaiS1c',
-    // database : 'ps',
-// });
+    password : 'oM0deithe9ieCheibieJongei0vaiS1c',
+    database : 'ps',
+	});
+}
 
 connection.connect(function(err) {
     if (err){
