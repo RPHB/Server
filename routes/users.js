@@ -5,24 +5,24 @@ var md5 = require('md5');
 var con = require('./connexionDatabase.js');
 
 /* GET users listing. */
-router.get('/getUser/:pseudo', function(request, res, next) {
-	var pseudo = request.params.pseudo;
-	function getLastRecord(pseudo) {
+router.get('/getUser/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id) {
 		return new Promise(function(resolve, reject) {
-			var sql = "select username from users where username='"+pseudo+"';";
+			var sql = "select id from users where id='"+id+"';";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
 			});
 	  });
 	}
-	getLastRecord(pseudo).then(function(rows){ res.send(rows); });
+	getLastRecord(id).then(function(rows){ res.send(rows); });
 });
 
 /* GET all users */
 router.get('/getAllUser', function(request, res, next) {
-	var pseudo = request.params.pseudo;
-	function getLastRecord(pseudo) {
+	
+	function getLastRecord() {
 		return new Promise(function(resolve, reject) {
 			var sql = "select * from users;";
 			con.query(sql, function (err, rows, fields) {
@@ -31,7 +31,7 @@ router.get('/getAllUser', function(request, res, next) {
 			});
 		});
 	}
-	getLastRecord(pseudo).then(function(rows){ res.send(rows); });
+	getLastRecord().then(function(rows){ res.send(rows); });
 });
 
 /* UPDATE user with id */
@@ -82,20 +82,35 @@ router.get('/connect/:pseudo/:pwd', function(request, res, next) {
 		});
 	}
 	getLastRecord(pseudo).then(function(rows){
+		console.log(JSON.stringify(rows))
 		
 		if (!rows["0"])
 		{
-			console.log("falseUSER")
-			res.send("falseUSER");
+			jsonResponse = {
+				res:"falseUSER"
+			}
+			res.send(JSON.stringify(jsonResponse));
 			return;
 		}
 		console.log("rows = " + JSON.stringify(rows))
 		console.log("pwd = " + pwd)
 		console.log("BASEpwd = " + rows["0"].pwd)
 		if (rows["0"].pwd == pwd)
-			res.send("true");
+		{
+			var jsonResponse = {
+				res:true,
+				id:rows["0"].id
+			}
+			
+		}
+			
 		else
-			res.send("falsePwd");
+		{
+			jsonResponse = {
+				res:"falsePwd"
+			}
+		}
+		res.send(JSON.stringify(jsonResponse));
 	});
 });
 

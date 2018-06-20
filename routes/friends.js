@@ -5,18 +5,18 @@ var md5 = require('md5');
 var con = require('./connexionDatabase.js');
 
 // La liste de mes amis VALIDES
-router.get('/getFriends/:pseudo', function(request, res, next) {
-	var pseudo = request.params.pseudo;
-	function getLastRecord(pseudo) {
+router.get('/getFriends/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id) {
 		return new Promise(function(resolve, reject) {
-			var sql = "select * from user_friends where (asking_friend='"+pseudo+"' or  asked_friend='"+pseudo+"') and state=1 and denied=0;";
+			var sql = "select * from user_friends where (asking_friend='"+id+"' or  asked_friend='"+id+"') and state=1 and denied=0;";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
 	}
-	getLastRecord(pseudo).then(function(rows){
+	getLastRecord(id).then(function(rows){
 		if (rows.length > 0)
 			res.send(rows);
 		else
@@ -25,18 +25,18 @@ router.get('/getFriends/:pseudo', function(request, res, next) {
 });
 
 //La liste des demandes d'ami que je n'ai pas encore acceptés et que je n'ai pas refusés
-router.get('/getPendingFriends/:pseudo', function(request, res, next) {
-	var pseudo = request.params.pseudo;
-	function getLastRecord(pseudo) {
+router.get('/getPendingFriends/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id) {
 		return new Promise(function(resolve, reject) {
-			var sql = "select * from user_friends where asked_friend='"+pseudo+"' and state=0 and denied=0;";
+			var sql = "select * from user_friends where asked_friend='"+id+"' and state=0 and denied=0;";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
 			});
 		});
 	}
-	getLastRecord(pseudo).then(function(rows){
+	getLastRecord(id).then(function(rows){
 		if (rows.length > 0)
 			res.send(rows);
 		else
