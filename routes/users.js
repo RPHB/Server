@@ -18,7 +18,28 @@ router.get('/getUser/:id', function(request, res, next) {
 	}
 	getLastRecord(id).then(function(rows){ res.send(rows); });
 });
-
+//get id from name
+router.get('/getUserId/:username', function(request, res, next) {
+	var username = request.params.username;
+	function getLastRecord(username) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select id from users where username='"+username+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+	  });
+	}
+	getLastRecord(username).then(function(rows){
+		if (!rows["0"])
+		{
+			res.send("falseUser")
+		}
+		// res.send((rows["0"].id).toString);
+		res.send("id:"+rows["0"].id);
+	});
+	
+});
 /* GET all users */
 router.get('/getAllUser', function(request, res, next) {
 	
