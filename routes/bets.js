@@ -65,6 +65,24 @@ router.post('/create/:idMatch/:idUser/:tokens/:choice/:date/:sport', function(re
 	}
 	getLastRecord(idMatch, idUser, tokens, choice, date).then(function(rows){ res.send(rows); });
 });
+router.get('/createApp/:idUser/:choice/:date/:nomTeam1/:nomTeam2', function(request, res, next) {
+  
+  var idUser = request.params.idUser;
+  var choice = request.params.choice;
+  var nomTeam1 = request.params.nomTeam1;
+  var nomTeam2 = request.params.nomTeam2;
+  var date = request.params.date;
+	function getLastRecord(choice, idUser, nomTeam1, nomTeam2, date){
+		return new Promise(function(resolve, reject) {
+			var sql = "insert into bets(choice, idUser, team1, team2, date) values('"+choice+"', '"+idUser+"', '"+nomTeam1+"', '"+nomTeam2+"', '"+ date +"');";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return resolve(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord(choice, idUser, nomTeam1, nomTeam2, date).then(function(rows){ res.send(rows); });
+});
 
 /* UPDATE bets with id */
 router.put('/update/:id/:tokens/:choice/:date/:isPayed/:sport', function(request, res, next) {

@@ -3,7 +3,7 @@ var router = express.Router();
 var mysql = require('mysql');
 var md5 = require('md5');
 var con = require('./connexionDatabase.js');
-
+ 
 // La liste de mes amis VALIDES
 router.get('/getFriends/:id', function(request, res, next) {
 	var id = request.params.id;

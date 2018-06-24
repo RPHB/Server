@@ -28,15 +28,17 @@ router.get('/getAll', function(request, res, next) {
 /* GET users listing. */
 router.get('/', function(req, res, next) {
 	var teamListHTML = fs.readFileSync("teamList.txt", "UTF-8");
-
+	// console.log("toto")
 	var teamListJSON = html2json(teamListHTML);
 
 	var teamListJSON = teamListJSON.child;
 	var teamListJSONSize = teamListJSON.length;
+	// console.log(JSON.stringify(teamListJSON)) 
 	console.log(teamListJSONSize)
 	var resultJson = "{"
 	for (var i = 1; i < teamListJSONSize; ++i)
 	{
+		console.log(JSON.stringify(teamListJSON[i]))
 		var value = teamListJSON[i].attr.value
 		var team = teamListJSON[i].child["0"].text
 		resultJson+='"child'+i+'":{';
