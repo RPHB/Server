@@ -24,12 +24,43 @@ router.get('/getForUser/:id', function(request, res, next) {
 		return new Promise(function(resolve, reject) {
 			var sql = "select * from bets where idUser='"+id+"' order by date;";
 			con.query(sql, function (err, rows, fields) {
-				if (err) return reject(err);
+				if (err) return resolve(err);
 				resolve(rows);
 			});
 	  });
 	}
-	getLastRecord(id).then(function(rows){ res.send(rows); });
+	getLastRecord(id).then(function(rows){
+		// rows.toto = Object.keys(rows).length;
+		// console.log("rowslength : " + rows.toto)
+		var teamListJSON = rows
+		var teamListJSONSize = teamListJSON.length
+		var resultJson = "{"
+		for (var i = 1; i < teamListJSONSize; ++i)
+	{
+		console.log(JSON.stringify(teamListJSON[i]))
+		// var value = teamListJSON[i].attr.value
+		// var team = teamListJSON[i].child["0"].text
+		resultJson+='"child'+i+'":' + JSON.stringify(teamListJSON[i]) + ",";
+		// resultJson+='"team":"'+team+'",';
+		// resultJson+='"value":"'+value+'"';
+		// resultJson+="},";
+		//team = team.substring(0, team.indexOf(" "))
+		// console.log(value)
+		// console.log(team)
+	}
+	// resultJson=resultJson.substring(0, resultJson.length - 1);
+	resultJson+='"length":'+teamListJSONSize;
+	resultJson+="}";
+    //resultJson=JSON.parse(resultJson);
+	// var resultSize=Object.keys(resultJson).length;
+	// resultJson.length=resultSize;
+	// res.send(resultJson)
+	console.log("TOTO")
+	console.log("TOTO")
+	console.log("TOTO")
+	console.log(resultJson)
+    // res.send(JSON.stringify(resultJson)); });
+    res.send(resultJson); });
 });
 
 /* GET all bets */
