@@ -6,7 +6,7 @@ var html2json = require('html2json').html2json;
 var json2html = require('html2json').json2html;
 var async = require('async');
 var fs = require("fs");
-
+var http = require('http');
 var con = require('./connexionDatabase.js');
 
 
@@ -24,41 +24,67 @@ router.get('/getAll', function(request, res, next) {
 	getLastRecord().then(function(rows){ res.send(rows); });
 });
 
+router.get('/updateMatch', function(request, res, next) {
+	function getLastRecord() {
+		return new Promise(function(resolve, reject) {
+			var sql = "select id from teams;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord().then(function(rows){
+	
+		for (var i = 0; i < Object.keys(rows).length; ++i)
+		// for (var i = 0; i < 1; ++i)
+		{
+			// request('http://127.0.0.1:3000/match/' + rows[0].id)
+			http.get('http://127.0.0.1:3000/match/' + i, function(response) {
+    // console.log('Status:', response.statusCode);
+    // console.log('Headers: ', response.headers);
+    // response.pipe(process.stdout);
+});
+			// request('http://127.0.0.1:3000/match/' + 18).then(function(response){
+			// console.log(response);})
+			
+		}
+	
+	});
+});
+
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/updateTeamList', function(req, res, next) {
 	var teamListHTML = fs.readFileSync("teamList.txt", "UTF-8");
-	// console.log("toto")
 	var teamListJSON = html2json(teamListHTML);
 
 	var teamListJSON = teamListJSON.child;
 	var teamListJSONSize = teamListJSON.length;
-	// console.log(JSON.stringify(teamListJSON)) 
-	console.log(teamListJSONSize)
 	var resultJson = "{"
+	function checkTeamExist(value, team) {
+		return new Promise(function(resolve, reject) {
+			
+			var sql = "insert ignore into teams (id, name) values('"+value+"','" + team + "');";
+			// console.log(team + "       pendans req")
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows, team, value);
+			});
+		});
+	}
 	for (var i = 1; i < teamListJSONSize; ++i)
 	{
-		console.log(JSON.stringify(teamListJSON[i]))
 		var value = teamListJSON[i].attr.value
 		var team = teamListJSON[i].child["0"].text
-		resultJson+='"child'+i+'":{';
-		resultJson+='"team":"'+team+'",';
-		resultJson+='"value":"'+value+'"';
-		resultJson+="},";
-		//team = team.substring(0, team.indexOf(" "))
-		// console.log(value)
-		// console.log(team)
+		checkTeamExist(value, team).then(function(rows, t, v){});
+		
 	}
-	//resultJson=resultJson.substring(0, resultJson.length - 1);
 	resultJson+='"length":'+teamListJSONSize;
 	resultJson+="}";
-    //resultJson=JSON.parse(resultJson);
-	// var resultSize=Object.keys(resultJson).length;
-	// resultJson.length=resultSize;
 	res.send(resultJson)
 
 })
-
 
 router.get('/:team_id', function(req, res, next) {
 	request('http://www.foot-national.com/partage.php?type=3&id='+req.params.team_id).then(function(response){
