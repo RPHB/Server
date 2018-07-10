@@ -9,7 +9,7 @@ var fs = require("fs");
 var http = require('http');
 var con = require('./connexionDatabase.js');
 // var sleep = require('sleep');
-var sleep = require('system-sleep');
+// var sleep = require('system-sleep');
 
 
 /* GET all sport */
@@ -41,10 +41,13 @@ router.get('/updateMatch', function(request, res, next) {
 		for (var i = 0; i < Object.keys(rows).length; ++i)
 		{
 			console.log(rows[i].id)
-			sleep(500)
-			http.get('http://127.0.0.1:3000/match/' + rows[i].id, function(response) {
+			// sleep(500)
+			var req = http.get('http://127.0.0.1:3000/match/' + rows[i].id, function(response) {
 				
 			});
+			req.on('error',function(err){
+				console.log(err);
+			 });
 			// setTimeout(function(){goReq(i);}, 500)
 			// var goReq = function(number)
 			// {
