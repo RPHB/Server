@@ -55,6 +55,7 @@ router.get('/getAllUser', function(request, res, next) {
 	getLastRecord().then(function(rows){ res.send(rows); });
 });
 
+
 /* UPDATE user with id */
 router.put('/update/:id/:pseudo/:email/:admin', function(request, res, next) {
 	var id = request.params.id;
@@ -64,6 +65,21 @@ router.put('/update/:id/:pseudo/:email/:admin', function(request, res, next) {
 	function getLastRecord(id, pseudo, email) {
 		return new Promise(function(resolve, reject) {
 			var sql = "update users set username='"+pseudo+"', email='"+email+"', admin='"+admin+"' where id = "+id+";";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			  });
+			});
+	}
+	getLastRecord(id, pseudo, email).then(function(rows){ res.send(rows); });
+});
+router.put('/updateApp/:id/:pseudo/:email/:pwd', function(request, res, next) {
+	var id = request.params.id;
+	var pseudo = request.params.pseudo;
+	var email = request.params.email;
+	function getLastRecord(id, pseudo, email) {
+		return new Promise(function(resolve, reject) {
+			var sql = "update users set username='"+pseudo+"', email='"+email+"', pwd='"+pwd+"' where id = "+id+";";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
