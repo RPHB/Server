@@ -8,6 +8,8 @@ var async = require('async');
 var fs = require("fs");
 var http = require('http');
 var con = require('./connexionDatabase.js');
+// var sleep = require('sleep');
+var sleep = require('system-sleep');
 
 
 /* GET all sport */
@@ -35,16 +37,26 @@ router.get('/updateMatch', function(request, res, next) {
 		});
 	}
 	getLastRecord().then(function(rows){
-	
+	// console.log(rows)
 		for (var i = 0; i < Object.keys(rows).length; ++i)
-		// for (var i = 0; i < 1; ++i)
 		{
-			// request('http://127.0.0.1:3000/match/' + rows[0].id)
-			http.get('http://127.0.0.1:3000/match/' + i, function(response) {
-    // console.log('Status:', response.statusCode);
-    // console.log('Headers: ', response.headers);
-    // response.pipe(process.stdout);
-});
+			console.log(rows[i].id)
+			sleep(500)
+			http.get('http://127.0.0.1:3000/match/' + rows[i].id, function(response) {
+				
+			});
+			// setTimeout(function(){goReq(i);}, 500)
+			// var goReq = function(number)
+			// {
+				// console.log('http://127.0.0.1:3000/match/' + number)
+				// http.get('http://127.0.0.1:3000/match/' + number, function(response) {
+					// console.log("success")
+					// console.log('Status:', response.statusCode);
+					// console.log('Headers: ', response.headers);
+					// response.pipe(process.stdout);
+				// });
+			// }
+			
 			// request('http://127.0.0.1:3000/match/' + 18).then(function(response){
 			// console.log(response);})
 			
@@ -77,7 +89,8 @@ router.get('/updateTeamList', function(req, res, next) {
 	{
 		var value = teamListJSON[i].attr.value
 		var team = teamListJSON[i].child["0"].text
-		checkTeamExist(value, team).then(function(rows, t, v){});
+		checkTeamExist(value, team).then(function(rows, t, v){
+		});
 		
 	}
 	resultJson+='"length":'+teamListJSONSize;
@@ -87,37 +100,36 @@ router.get('/updateTeamList', function(req, res, next) {
 })
 
 router.get('/:team_id', function(req, res, next) {
-	function checkMatchExist(t1,t2,id1, id2,d,score) {
+	function checkMatchExist(id1, id2,d,score) {
 		return new Promise(function(resolve, reject) {
-			var nomTeam1 = t1
-			var nomTeam2 = t2
 			
-			// console.log("match")
-			// console.log(match)
-			// console.log("nomTeam1")
-			console.log(nomTeam1)
-			// console.log("nomTeam2")
-			console.log(nomTeam2)
 			var date = d.substring(d.indexOf(" ") + 1);
 			date = date.substring(0, date.indexOf(" "));
 			var jour=date.substring(0, 2);
 			var mois=date.substring(3, 5);
 			var année=date.substring(6, 10);
 			date=année+"-"+mois+"-"+jour
+			var result=2;
+			var scoreT1=score.substring(0, score.indexOf("-") - 1)
+			var scoreT2=score.substring(score.indexOf("-") + 2)
+			if (scoreT1<scoreT2)
+				result=0;
+			else if (scoreT1>scoreT2)
+				result=1
 			
-			// var sql = "insert ignore into matchs (idTeam1, idTeam2, date, score, result) values(select id from teams where name='"+nomTeam1+"',select id from teams where name='"+nomTeam2+"','"+date+"','"+score+"', 0);";
-			var sql = "insert ignore into matchs (idTeam1, idTeam2, date, score, result) select teams.id from teams where name='"+nomTeam1+"',select id from teams where name='"+nomTeam2+"','"+date+"','"+score+"', 0);";
-			console.log(sql);
-			// con.query(sql, function (err, rows, fields) {
-				// if (err) return reject(err);
-				// resolve(rows, team, value);
-			// });
+		   // var sql = "insert into matchs (idTeam1, idTeam2, date, score, result) values(select id from teams where name='"+nomTeam1+"',select id from teams where name='"+nomTeam2+"','"+date+"','"+score+"', 0);";
+			var sql = "insert into matchs (idTeam1, idTeam2, date, score, result) values ('"+id1+"','"+id2+"','"+date+"','"+score+"','"+result+"') on duplicate key update score='"+score+"', result='"+result+"';";
+			// console.log(sql);
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
 		});
 	}
 	function getTeamId(team1, team2, date, score) {
 		return new Promise(function(resolve, reject) {
 			var sql = "select '"+date+"' as date,'"+score+"' as score,id, name from teams where name='"+team1+"' or name='"+team2+"';";
-			console.log(sql);
+			// console.log(sql);
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
@@ -149,25 +161,43 @@ router.get('/:team_id', function(req, res, next) {
 						result+='"score":"'+currChild[5].child["0"].child["0"].text+'"';
 						result+="},";
 						++cpt;
+						var score = currChild[5].child["0"].child["0"].text;
 						var match=currChild[4].child["1"].child["0"].text;
 						var nomTeam1 = match.substring(0, match.indexOf("-") - 1);
 						var nomTeam2 = match.substring(match.indexOf("-") + 2);
+						if (nomTeam2<nomTeam1)
+						{
+							var scoreTab=score.split("");
+							scoreTab=scoreTab.reverse();
+							score=scoreTab.join("");
+						}
 						// console.log(
-						getTeamId(nomTeam1, nomTeam2, currChild[2].child["0"].text, currChild[5].child["0"].child["0"].text).then(function(rows, t, v){
-							console.log(rows)
-							// var t1 = rows[0].name;
-							// var t2 = rows[1].name;
-							// var id1 = rows[0].id;
-							// var id2 = rows[1].id;
-							// console.log(t1 + " " + t2 + " " + id1 + " " + id2 + currChild[2].child["0"].text)
-							// if (t2 < t1)
-							// {
-								// t2=rows[0].name;
-								// t1=rows[1].name;
-								// id1 = rows[1].id;
-							    // id2 = rows[0].id;
-							// }
-							//checkMatchExist(t1,t2,id1,id2,currChild[5].child["0"].child["0"].text).then(function(rows, t, v){});
+						getTeamId(nomTeam1, nomTeam2, currChild[2].child["0"].text, score).then(function(rows, t, v){
+							// console.log(rows)
+							if (!rows || !rows[0] || !rows[1])
+							{
+								return;
+							}
+							var t1 = rows[0].name;
+							var t2 = rows[1].name;
+							var id1 = rows[0].id;
+							var id2 = rows[1].id;
+							var date = rows[1].date;
+							var score = rows[1].score;
+							
+							// console.log(t1 + " " + t2 + " " + id1 + " " + id2)
+							if (t2 < t1)
+							{
+								t2=rows[0].name;
+								t1=rows[1].name;
+								id1 = rows[1].id;
+							    id2 = rows[0].id;
+								// var scoreTab=score.split("");
+								// scoreTab=scoreTab.reverse();
+								// score=scoreTab.join("");
+							}
+							// console.log(score);
+							checkMatchExist(id1,id2,date, score).then(function(rows, t, v){});
 
 						});
 					}
@@ -182,7 +212,7 @@ router.get('/:team_id', function(req, res, next) {
 		result=JSON.parse(result);
 		var resultSize=Object.keys(result).length;
 		result.length=resultSize;
-		console.log(result);
+		// console.log(result);
 		res.send(result);
 	})
 
