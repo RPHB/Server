@@ -38,11 +38,11 @@ router.get('/getUserId/:username', function(request, res, next) {
 		// res.send((rows["0"].id).toString);
 		res.send("id:"+rows["0"].id);
 	});
-	
+
 });
 /* GET all users */
 router.get('/getAllUser', function(request, res, next) {
-	
+
 	function getLastRecord() {
 		return new Promise(function(resolve, reject) {
 			var sql = "select * from users;";
@@ -57,14 +57,13 @@ router.get('/getAllUser', function(request, res, next) {
 
 
 /* UPDATE user with id */
-router.put('/update/:id/:pseudo/:email/:admin', function(request, res, next) {
+router.put('/update/:id/:pseudo/:email', function(request, res, next) {
 	var id = request.params.id;
 	var pseudo = request.params.pseudo;
 	var email = request.params.email;
-	var admin = request.params.admin;
 	function getLastRecord(id, pseudo, email) {
 		return new Promise(function(resolve, reject) {
-			var sql = "update users set username='"+pseudo+"', email='"+email+"', admin='"+admin+"' where id = "+id+";";
+			var sql = "update users set username='"+pseudo+"', email='"+email+"' where id = "+id+";";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
@@ -120,7 +119,7 @@ router.get('/connect/:pseudo/:pwd', function(request, res, next) {
 	}
 	getLastRecord(pseudo).then(function(rows){
 		console.log(JSON.stringify(rows))
-		
+
 		if (!rows["0"])
 		{
 			jsonResponse = {
@@ -138,9 +137,9 @@ router.get('/connect/:pseudo/:pwd', function(request, res, next) {
 				res:true,
 				id:rows["0"].id
 			}
-			
+
 		}
-			
+
 		else
 		{
 			jsonResponse = {
