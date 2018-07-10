@@ -37,7 +37,7 @@ router.get('/getForUser/:id', function(request, res, next) {
 	{
 		console.log(JSON.stringify(teamListJSON[i]))
 		resultJson+='"child'+i+'":' + JSON.stringify(teamListJSON[i]) + ",";
-	
+
 	}
 	resultJson+='"length":'+teamListJSONSize;
 	resultJson+="}";
@@ -66,6 +66,7 @@ router.post('/create/:idMatch/:idUser/:tokens/:choice/:date/:sport', function(re
   var choice = request.params.choice;
   var date = request.params.date;
 	var sport = request.params.sport;
+
 	function getLastRecord(idMatch, idUser, tokens, choise, date){
 		return new Promise(function(resolve, reject) {
 			var sql = "insert into bets(idMatch, idUser, tokens, choice, date, isPayed, sport) values('"+idMatch+"', '"+idUser+"', '"+tokens+"', '"+choice+"', '"+date+"', '0', '"+sport+"');";
@@ -75,10 +76,33 @@ router.post('/create/:idMatch/:idUser/:tokens/:choice/:date/:sport', function(re
 			});
 		});
 	}
-	getLastRecord(idMatch, idUser, tokens, choice, date).then(function(rows){ res.send(rows); });
+	function takeOffTokens(idUser, tokens){
+		return new Promise(function(resolve, reject) {
+			var sql = "select tokens from users where id = " + idUser +";";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+
+	takeOffTokens(idUser, tokens).then(function(result){
+		if(result[0].tokens >= tokens) {
+			var newTokens = result[0].tokens - tokens;
+			var sql = "update users set tokens="+newTokens+" where id = " + idUser + " ;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+			});
+			getLastRecord(idMatch, idUser, tokens, choice, date).then(function(rows){ res.send(rows); });
+		}
+	});
+
+
+
 });
+
 router.get('/createApp/:idUser/:choice/:date/:nomTeam1/:nomTeam2', function(request, res, next) {
-  
+
   var idUser = request.params.idUser;
   var choice = request.params.choice;
   var nomTeam1 = request.params.nomTeam1;

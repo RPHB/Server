@@ -16,7 +16,7 @@ else{
     host     : 'xenowarehouse13.myqnapcloud.com',
     user     : 'root',
     password : 'oM0deithe9ieCheibieJongei0vaiS1c',
-    database : 'ps',
+    database : 'beyourbet',
 	});
 }
 
