@@ -55,6 +55,25 @@ router.get('/getAllUser', function(request, res, next) {
 	getLastRecord().then(function(rows){ res.send(rows); });
 });
 
+router.get('/resetCoin/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id) {
+		return new Promise(function(resolve, reject) {
+			var sql = "update users set tokens=500 where id='"+id+"' and tokens<500;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				if (rows.affectedRows==0)
+				{
+					resolve("KO")
+					return;
+				}
+				resolve("OK");
+			});
+		});
+	}
+	getLastRecord(id).then(function(rows){ res.send(rows); });
+});
+
 
 /* UPDATE user with id */
 router.put('/update/:id/:pseudo/:email', function(request, res, next) {
