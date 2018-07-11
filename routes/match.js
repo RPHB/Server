@@ -25,6 +25,47 @@ router.get('/getAll', function(request, res, next) {
 	}
 	getLastRecord().then(function(rows){ res.send(rows); });
 });
+router.get('/getFavoriteMatchs', function(request, res, next) {
+	function getFavoriteMatchsId() {
+		return new Promise(function(resolve, reject) {
+			var sql = "SELECT idmatch, COUNT(*) as occur FROM bets GROUP BY idMatch ORDER BY `occur` DESC limit 5;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	function getMatchInfo(rows) {
+		return new Promise(function(resolve, reject) {
+			var resultSize=Object.keys(rows).length;
+			var matchList="";
+			// console.log(rows);
+			for (var i = 0; i < resultSize; ++i)
+			{
+				matchList+=rows[i].idmatch + ',';
+			}
+			matchList=matchList.substring(0,matchList.length - 1);
+			
+			
+			var sql = "select * from matchs where id in ("+matchList+");";
+			console.log(sql)
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getFavoriteMatchsId().then(function(rows){
+			
+		getMatchInfo(rows).then(function(rows){
+		
+			res.send(rows);
+	
+		});
+			
+		
+	});
+});
 
 router.get('/updateMatch', function(request, res, next) {
 	function getLastRecord() {
