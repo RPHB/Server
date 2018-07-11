@@ -59,12 +59,14 @@ router.get('/getAll', function(request, res, next) {
 });
 
 /* POST create bets */
-router.post('/create/:idMatch/:idUser/:tokens/:choice/:date/:sport', function(request, res, next) {
+router.get('/create/:idMatch/:idUser/:tokens/:choice/:sport', function(request, res, next) {
   var idMatch = request.params.idMatch;
   var idUser = request.params.idUser;
   var tokens = request.params.tokens;
   var choice = request.params.choice;
-  var date = request.params.date;
+  var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  date = date.substring(0, date.indexOf(" "));
+  console.log(date)
 	var sport = request.params.sport;
 
 	function getLastRecord(idMatch, idUser, tokens, choise, date){
@@ -152,6 +154,59 @@ router.delete('/delete/:id', function(request, res, next) {
 		});
 	}
 	getLastRecord(id).then(function(rows){ res.send(rows); });
+});
+router.get('/pay/:user_id', function(request, res, next) {
+	var user_id = request.params.user_id;
+	function getUnpayedBets(user_id) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select idUser, bets.id,idMatch, tokens, choice, quotation1, quotation2, result, quotation3 from bets, matchs where matchs.id = idMatch and isPayed=0 and idUser='"+user_id+"';";
+			console.log(sql)
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	function payBet(user_id, betId, tokens)
+	{
+		return new Promise(function(resolve, reject) {
+			var sql = "update users, bets set users.tokens=users.tokens+"+tokens+", isPayed=1 where users.id='"+user_id+"'and bets.id='"+betId+"';";
+			console.log(sql)
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getUnpayedBets(user_id).then(function(rows){
+		// console.log(rows);
+		var resultSize=Object.keys(rows).length;
+		// console.log(resultSize);
+		for (var i = 0; i < resultSize; ++i)
+		{
+			var betId=rows[i].id;
+			var userId=rows[i].idUser;
+			var choice=rows[i].choice;
+			var result=rows[i].result;
+			var tokens=rows[i].tokens;
+			var quotNumber=choice+1
+			var quotation=rows[i]["quotation"+quotNumber];
+			
+			tokens=tokens*quotation;
+			
+			
+			if (result!=choice)
+			{
+				tokens=0;
+			}
+			
+			payBet(user_id, betId, tokens).then(function(rows)
+			{
+			})
+			
+		
+		}
+		res.send(rows); });
 });
 
 

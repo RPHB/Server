@@ -66,6 +66,7 @@ router.get('/updateMatch', function(request, res, next) {
 		}
 	
 	});
+	res.send('Done');
 });
 
 
@@ -103,6 +104,30 @@ router.get('/updateTeamList', function(req, res, next) {
 })
 
 router.get('/:team_id', function(req, res, next) {
+	function containNumber(str)
+	{
+		function isDigit(a)
+		{
+			if (a=='0' || a=='1' ||a=='2' ||a=='3' ||a=='4' ||a=='5' ||a=='6' ||a=='7' ||a=='8' ||a=='9')
+			{
+				// console.log("'" + a + "' est un chiffre")
+				return true;
+			}
+				
+			return false;
+		}
+		for (var i = 0; i < str.length; ++i)
+		{
+			if (isDigit(str[i]) == true)
+			{
+				// console.log("'"+str+"' contient un nombre '" + str[i]+"'")
+				return true;
+			}
+				
+		}
+		// console.log("'"+str+"' contient pas de nombre")
+		return false;
+	}
 	function checkMatchExist(id1, id2,d,score) {
 		return new Promise(function(resolve, reject) {
 			
@@ -112,13 +137,17 @@ router.get('/:team_id', function(req, res, next) {
 			var mois=date.substring(3, 5);
 			var année=date.substring(6, 10);
 			date=année+"-"+mois+"-"+jour
-			var result=2;
+			var result=3;
 			var scoreT1=score.substring(0, score.indexOf("-") - 1)
 			var scoreT2=score.substring(score.indexOf("-") + 2)
 			if (scoreT1<scoreT2)
-				result=0;
+				result=1;
 			else if (scoreT1>scoreT2)
-				result=1
+				result=0
+			else if (containNumber(score) == true)
+			{
+				result=2;
+			}
 			
 		   // var sql = "insert into matchs (idTeam1, idTeam2, date, score, result) values(select id from teams where name='"+nomTeam1+"',select id from teams where name='"+nomTeam2+"','"+date+"','"+score+"', 0);";
 			var sql = "insert into matchs (idTeam1, idTeam2, date, score, result) values ('"+id1+"','"+id2+"','"+date+"','"+score+"','"+result+"') on duplicate key update score='"+score+"', result='"+result+"';";

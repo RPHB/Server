@@ -57,10 +57,10 @@ app.use(function(req, res, next) {
 	// request('http://127.0.0.1:3000/match/updateTeamList').then(function(response){
 		// console.log(response);
 // })},15000);
-setInterval(function(){
-	request('http://127.0.0.1:3000/match/updateMatch').then(function(response){
-		console.log(response);
-})},60000 * 5);
+// setInterval(function(){
+	// request('http://127.0.0.1:3000/match/updateMatch').then(function(response){
+		// console.log(response);
+// })},60000 * 5);
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
