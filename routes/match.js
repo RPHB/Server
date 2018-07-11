@@ -46,7 +46,7 @@ router.get('/updateMatch', function(request, res, next) {
 				
 			});
 			req.on('error',function(err){
-				console.log(err);
+				console.log("pas de matchs pour cette equipe");
 			 });
 			// setTimeout(function(){goReq(i);}, 500)
 			// var goReq = function(number)
