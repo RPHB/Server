@@ -76,7 +76,6 @@ router.get('/resetCoin/:id', function(request, res, next) {
 
 /* GET all users order by Tokens*/
 router.get('/getUserClassement', function(request, res, next) {
-
 	function getLastRecord() {
 		return new Promise(function(resolve, reject) {
 			var sql = "select id, username,tokens  from users order by tokens desc;";
@@ -89,6 +88,26 @@ router.get('/getUserClassement', function(request, res, next) {
 	getLastRecord().then(function(rows){ res.send(rows); });
 });
 
+router.post('/setGift/:tokens', function(request, res, next) {
+	var tokens = request.params.tokens;
+	function getLastRecord() {
+		return new Promise(function(resolve, reject) {
+			var sql = "select id, username,tokens  from users;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				for(i = 0; i < rows.length; i++){
+					var newtoken = parseInt(rows[i].tokens) + parseInt(tokens);
+					var sql2 = "update users set tokens='"+newtoken+"' where id = "+rows[i].id+";";
+					con.query(sql2, function (err, rows, fields) {
+						if (err) return reject(err)
+					});
+				}
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord().then(function(rows){ res.send(rows); });
+});
 
 /* UPDATE user with id */
 router.put('/update/:id/:pseudo/:email', function(request, res, next) {
