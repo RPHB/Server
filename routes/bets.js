@@ -189,7 +189,14 @@ router.get('/pay/:user_id', function(request, res, next) {
 			var choice=rows[i].choice;
 			var result=rows[i].result;
 			var tokens=rows[i].tokens;
-			var quotNumber=choice+1
+			var quotNumber;
+			if (choice==0)
+				quotNumber=2;
+			else if (choice==1)
+				quotNumber=1;
+			else if (choice==2)
+				quotNumber=3;
+			
 			var quotation=rows[i]["quotation"+quotNumber];
 			
 			tokens=tokens*quotation;

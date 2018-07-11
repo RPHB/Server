@@ -141,12 +141,12 @@ router.get('/:team_id', function(req, res, next) {
 			var scoreT1=score.substring(0, score.indexOf("-") - 1)
 			var scoreT2=score.substring(score.indexOf("-") + 2)
 			if (scoreT1<scoreT2)
-				result=1;
+				result=2;
 			else if (scoreT1>scoreT2)
-				result=0
+				result=1
 			else if (containNumber(score) == true)
 			{
-				result=2;
+				result=0;
 			}
 			
 		   // var sql = "insert into matchs (idTeam1, idTeam2, date, score, result) values(select id from teams where name='"+nomTeam1+"',select id from teams where name='"+nomTeam2+"','"+date+"','"+score+"', 0);";
