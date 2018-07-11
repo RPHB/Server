@@ -79,7 +79,7 @@ router.get('/getUserClassement', function(request, res, next) {
 
 	function getLastRecord() {
 		return new Promise(function(resolve, reject) {
-			var sql = "select * from users order by tokens desc;";
+			var sql = "select id, username,tokens  from users order by tokens desc;";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
