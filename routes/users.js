@@ -55,6 +55,20 @@ router.get('/getAllUser', function(request, res, next) {
 	getLastRecord().then(function(rows){ res.send(rows); });
 });
 
+/* GET all users order by Tokens*/
+router.get('/getUserClassement', function(request, res, next) {
+
+	function getLastRecord() {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from users order by tokens desc;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord().then(function(rows){ res.send(rows); });
+});
 
 /* UPDATE user with id */
 router.put('/update/:id/:pseudo/:email', function(request, res, next) {
