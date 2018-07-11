@@ -249,7 +249,10 @@ router.get('/:team_id', function(req, res, next) {
 							// console.log(rows)
 							if (!rows || !rows[0] || !rows[1])
 							{
+								
 								return;
+								
+								
 							}
 							var t1 = rows[0].name;
 							var t2 = rows[1].name;
@@ -276,6 +279,9 @@ router.get('/:team_id', function(req, res, next) {
 					}
 				}
 
+			}
+			else{
+				res.send("pas de match pour cette equipe");
 			}
 
 
