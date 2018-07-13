@@ -3,6 +3,7 @@ var router = express.Router();
 var mysql = require('mysql');
 var md5 = require('md5');
 var con = require('./connexionDatabase.js');
+// var nodemailer = require('nodemailer');
 
 /* GET users listing. */
 router.get('/getUser/:id', function(request, res, next) {
@@ -36,6 +37,64 @@ router.get('/getUserId/:username', function(request, res, next) {
 			res.send("falseUser")
 		}
 		// res.send((rows["0"].id).toString);
+		res.send("id:"+rows["0"].id);
+	});
+
+});
+router.get('/resetPwd/:email', function(request, res, next) {
+	var email = request.params.email;
+	function getLastRecord(email) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select id, email from users where email='"+email+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+	  });
+	}
+	function changePwd(id, pwd)
+	{
+		pwd=md5(pwd)
+		console.log(pwd)
+		return new Promise(function(resolve, reject) {
+			var sql = "update users set pwd='"+pwd+"' where id='"+id+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+	  });
+	}
+	getLastRecord(email).then(function(rows){
+		if (!rows["0"])
+		{
+			res.send("falseUser")
+			return;
+		}
+		
+		function makeRandomPwd() {
+			var text = "";
+			var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,*!?";
+
+			for (var i = 0; i < 8; i++)
+				text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+			return text;
+		}
+		var newPwd=makeRandomPwd();
+		// res.send((rows["0"].id).toString);
+		var email=rows["0"].email;
+		console.log(rows["0"])
+		var send = require('gmail-send')({
+		  user: 'beyourbet@gmail.com',
+		  pass: 'Beyourbet2018',
+		  to:   email,
+		  subject: 'Réinitialisation de votre mot de passe',
+		  text:    'Votre nouveau mot de passe est ' + newPwd
+		});
+		changePwd(rows["0"].id, newPwd);
+		send({}, function (err, res) {
+		  console.log('* [example 1.1] send() callback returned: err:', err, '; res:', res);
+		})
 		res.send("id:"+rows["0"].id);
 	});
 
