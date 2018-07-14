@@ -282,6 +282,32 @@ router.get('/webconnect/:pseudo/:pwd', function(request, res, next) {
 	});
 });
 
+router.get('/RGPDgive/:pseudo/:pwd', function(request, res, next) {
+	var pseudo = request.params.pseudo;
+	var pwd = md5(request.params.pwd);
+	function getLastRecord(pseudo) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from users where username='"+pseudo+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord(pseudo).then(function(rows){
+		if (rows["0"].pwd == pwd){
+			var sql = "select * from bets where idUser='"+rows["0"].id+"';";
+			con.query(sql, function (err, data, fields) {
+				if (err) return reject(err);
+				var returnInfo = {"user" : rows,
+				"bets" : data}
+				res.send(returnInfo);
+			});
+		}else
+			res.send("false");
+	});
+});
+
 /* POST create user */
 router.get('/create/:pseudo/:pwd/:email', function(request, res, next) {
 	var pseudo = request.params.pseudo;
