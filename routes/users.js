@@ -70,7 +70,7 @@ router.get('/resetPwd/:email', function(request, res, next) {
 			res.send("falseUser")
 			return;
 		}
-		
+
 		function makeRandomPwd() {
 			var text = "";
 			var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,*!?";
@@ -267,7 +267,7 @@ router.get('/webconnect/:pseudo/:pwd', function(request, res, next) {
 	var pwd = md5(request.params.pwd);
 	function getLastRecord(pseudo) {
 		return new Promise(function(resolve, reject) {
-			var sql = "select * from users where username='"+pseudo+"' AND admin=1;";
+			var sql = "select * from users where username='"+pseudo+"';";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
@@ -275,7 +275,7 @@ router.get('/webconnect/:pseudo/:pwd', function(request, res, next) {
 		});
 	}
 	getLastRecord(pseudo).then(function(rows){
-		if (rows["0"].pwd == pwd)
+		if (rows["0"].pwd == pwd && rows["0"].admin == 1)
 			res.send("true");
 		else
 			res.send("false");
