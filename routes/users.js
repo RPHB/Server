@@ -352,6 +352,42 @@ router.get('/RGPDgive/:pseudo/:pwd', function(request, res, next) {
 			res.send("false");
 	});
 });
+router.get('/RGPDgiveApp/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from users where id='"+id+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+					resolve(rows);
+			});
+		});
+	}
+	getLastRecord(id).then(function(rows){
+		console.log(rows);
+		if (rows[0] != undefined){
+			var sql = "select * from bets where idUser='"+rows["0"].id+"';";
+			con.query(sql, function (err, data, fields) {
+				if (err) return reject(err);
+				var returnInfo = {"user" : rows,
+				"bets" : data}
+				var email=rows["0"].email;
+				var send = require('gmail-send')({
+				  user: 'beyourbet@gmail.com',
+				  pass: 'Beyourbet2018',
+				  to:   email,
+				  subject: 'Récupération de vos données',
+				  text:    JSON.stringify(returnInfo)
+				});
+				send({}, function (err, res) {
+				  console.log('* [example 1.1] send() callback returned: err:', err, '; res:', res);
+				})
+				res.send(returnInfo);
+			});
+		}else
+			res.send("false");
+	});
+});
 
 router.get('/RGPDdelete/:pseudo/:pwd', function(request, res, next) {
 	var pseudo = request.params.pseudo;
