@@ -25,6 +25,67 @@ router.get('/getAll', function(request, res, next) {
 	}
 	getLastRecord().then(function(rows){ res.send(rows); });
 });
+router.get('/teams', function(request, res, next) {
+	function getLastRecord() {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from teams order by name;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord().then(function(rows){ 
+	var teamListJSON = rows
+		var teamListJSONSize = teamListJSON.length
+		var resultJson = "{"
+		for (var i = 0; i < teamListJSONSize; ++i)
+		{
+			// console.log(JSON.stringify(teamListJSON[i]))
+			resultJson+='"child'+i+'":' + JSON.stringify(teamListJSON[i]) + ",";
+
+		}
+		resultJson+='"length":'+teamListJSONSize;
+		resultJson+="}";
+		res.send(resultJson);
+	});
+});
+router.get('/:team_id', function(request, res, next) {
+	var id = request.params.team_id
+	function getLastRecord(id) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select (select name from teams where id='"+id+"') as teamname1, teams.name as teamname2, idteam1,matchs.id as matchId, idteam2,date, score from matchs, teams where ((idTeam1='"+id+"' and idTeam2=teams.id)or (idTeam2='"+id+"' and idTeam1=teams.id));";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	function getTeamNames(id1, id2)
+	{
+		return new Promise(function(resolve, reject) {
+			var sql = "select name from teams where id='"+id1+"' or id='"+id2+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord(id).then(function(rows){ 
+	var teamListJSON = rows
+		var teamListJSONSize = teamListJSON.length
+		var resultJson = "{"
+		for (var i = 0; i < teamListJSONSize; ++i)
+		{
+			// console.log(JSON.stringify(teamListJSON[i]))
+			resultJson+='"child'+i+'":' + JSON.stringify(teamListJSON[i]) + ",";
+
+		}
+		resultJson+='"length":'+teamListJSONSize;
+		resultJson+="}";
+		res.send(resultJson);
+	});
+});
 router.get('/getFavoriteMatchs', function(request, res, next) {
 	function getFavoriteMatchsId() {
 		return new Promise(function(resolve, reject) {
@@ -83,7 +144,7 @@ router.get('/updateMatch', function(request, res, next) {
 		{
 			console.log(rows[i].id)
 			// sleep(500)
-			var req = http.get('http://127.0.0.1:3000/match/' + rows[i].id, function(response) {
+			var req = http.get('http://127.0.0.1:3000/match/update' + rows[i].id, function(response) {
 				
 			});
 			req.on('error',function(err){
@@ -144,7 +205,7 @@ router.get('/updateTeamList', function(req, res, next) {
 
 })
 
-router.get('/:team_id', function(req, res, next) {
+router.get('/update/:team_id', function(req, res, next) {
 	function containNumber(str)
 	{
 		function isDigit(a)

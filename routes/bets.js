@@ -22,7 +22,7 @@ router.get('/getForUser/:id', function(request, res, next) {
 	var id = request.params.id;
 	function getLastRecord(id) {
 		return new Promise(function(resolve, reject) {
-			var sql = "select * from bets where idUser='"+id+"' order by date;";
+			var sql = "select * from bets where idUser='"+id+"' order by id desc;";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return resolve(err);
 				resolve(rows);
@@ -33,15 +33,16 @@ router.get('/getForUser/:id', function(request, res, next) {
 		var teamListJSON = rows
 		var teamListJSONSize = teamListJSON.length
 		var resultJson = "{"
-		for (var i = 1; i < teamListJSONSize; ++i)
-	{
-		console.log(JSON.stringify(teamListJSON[i]))
-		resultJson+='"child'+i+'":' + JSON.stringify(teamListJSON[i]) + ",";
+		for (var i = 0; i < teamListJSONSize; ++i)
+		{
+			console.log(JSON.stringify(teamListJSON[i]))
+			resultJson+='"child'+i+'":' + JSON.stringify(teamListJSON[i]) + ",";
 
-	}
-	resultJson+='"length":'+teamListJSONSize;
-	resultJson+="}";
-    res.send(resultJson); });
+		}
+		resultJson+='"length":'+teamListJSONSize;
+		resultJson+="}";
+		res.send(resultJson);
+	});
 });
 
 /* GET all bets */
@@ -66,12 +67,21 @@ router.get('/create/:idMatch/:idUser/:tokens/:choice/:sport', function(request, 
   var choice = request.params.choice;
   var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
   date = date.substring(0, date.indexOf(" "));
-  console.log(date)
+  // console.log(date)
 	var sport = request.params.sport;
+	
 
 	function getLastRecord(idMatch, idUser, tokens, choise, date){
+		
 		return new Promise(function(resolve, reject) {
-			var sql = "insert into bets(idMatch, idUser, tokens, choice, date, isPayed, sport) values('"+idMatch+"', '"+idUser+"', '"+tokens+"', '"+choice+"', '"+date+"', '0', '"+sport+"');";
+			console.log("toto")
+			var sql = "insert into bets(idMatch, idUser, tokens, choice, date, isPayed, sport, team1, team2)"
+			sql += "select '"+idMatch+"', '"+idUser+"', '"+tokens+"', '"+choice+"', '"+date+"', '0', '"+"0"
+			sql+= "'," + "(select teams.name from teams, matchs where teams.id=matchs.idTeam1 and matchs.id='"+idMatch
+			sql+= "')," + "(select teams.name from teams, matchs where teams.id=matchs.idTeam2 and matchs.id='"+idMatch+"'"
+			sql+=");";
+			// console.log(sql)
+			console.log(sql)
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
@@ -87,7 +97,6 @@ router.get('/create/:idMatch/:idUser/:tokens/:choice/:sport', function(request, 
 			});
 		});
 	}
-
 	takeOffTokens(idUser, tokens).then(function(result){
 		if(result[0].tokens >= tokens) {
 			var newTokens = result[0].tokens - tokens;
@@ -96,6 +105,10 @@ router.get('/create/:idMatch/:idUser/:tokens/:choice/:sport', function(request, 
 				if (err) return reject(err);
 			});
 			getLastRecord(idMatch, idUser, tokens, choice, date).then(function(rows){ res.send(rows); });
+		}
+		else
+		{
+			res.send("Nombre de jetons insuffisant");
 		}
 	});
 
