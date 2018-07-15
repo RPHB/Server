@@ -290,12 +290,13 @@ router.get('/RGPDgive/:pseudo/:pwd', function(request, res, next) {
 			var sql = "select * from users where username='"+pseudo+"';";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
-				resolve(rows);
+					resolve(rows);
 			});
 		});
 	}
 	getLastRecord(pseudo).then(function(rows){
-		if (rows["0"].pwd == pwd){
+		console.log(rows);
+		if (rows[0] != undefined && rows["0"].pwd == pwd){
 			var sql = "select * from bets where idUser='"+rows["0"].id+"';";
 			con.query(sql, function (err, data, fields) {
 				if (err) return reject(err);
@@ -303,6 +304,36 @@ router.get('/RGPDgive/:pseudo/:pwd', function(request, res, next) {
 				"bets" : data}
 				res.send(returnInfo);
 			});
+		}else
+			res.send("false");
+	});
+});
+
+router.get('/RGPDdelete/:pseudo/:pwd', function(request, res, next) {
+	var pseudo = request.params.pseudo;
+	var pwd = md5(request.params.pwd);
+	function getLastRecord(pseudo) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from users where username='"+pseudo+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord(pseudo).then(function(rows){
+		console.log(rows[0]);
+		if (rows[0] != undefined && rows["0"].pwd == pwd){
+			var idToUse = rows["0"].id;
+			var sql2 = "delete from bets where idUser='"+idToUse+"';";
+			con.query(sql2, function (err, data, fields) {
+				if (err) return reject(err);
+			});
+			var sql3 = "delete from users where id='"+idToUse+"';";
+			con.query(sql3, function (err, data, fields) {
+				if (err) return reject(err);
+			});
+			res.send("true");
 		}else
 			res.send("false");
 	});
