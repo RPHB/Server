@@ -62,6 +62,20 @@ router.put('/update/:id/:idTeam1/:idTeam2/:date/:quotation1/:quotation2/:quotati
 	getLastRecord(id, idTeam1, idTeam2, quotation1, quotation2, quotation3, sport, idEvent, score).then(function(rows){ res.send(rows); });
 });
 
+/* DELETE sport with id */
+router.delete('/delete/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id){
+		return new Promise(function(resolve, reject) {
+			var sql = "delete from matchs where id = "+id+";";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord(id).then(function(rows){ res.send(rows); });
+});
 
 /* GET all sport */
 router.get('/getAll', function(request, res, next) {
@@ -86,7 +100,7 @@ router.get('/teams', function(request, res, next) {
 			});
 		});
 	}
-	getLastRecord().then(function(rows){ 
+	getLastRecord().then(function(rows){
 	var teamListJSON = rows
 		var teamListJSONSize = teamListJSON.length
 		var resultJson = "{"
@@ -122,7 +136,7 @@ router.get('/:team_id', function(request, res, next) {
 			});
 		});
 	}
-	getLastRecord(id).then(function(rows){ 
+	getLastRecord(id).then(function(rows){
 	var teamListJSON = rows
 		var teamListJSONSize = teamListJSON.length
 		var resultJson = "{"
@@ -181,50 +195,45 @@ router.get('/getFavoriteMatchs', function(request, res, next) {
 
 router.get('/updateMatch', function(request, res, next) {
 	function getLastRecord() {
-		return new Promise(function(resolve, reject) {
-			var sql = "select id from teams;";
-			con.query(sql, function (err, rows, fields) {
-				if (err) return reject(err);
-				resolve(rows);
-			});
-		});
-	}
+    return new Promise(function(resolve, reject) {
+      var sql = "select id from teams;";
+      con.query(sql, function (err, rows, fields) {
+        if (err) return reject(err);
+        resolve(rows);
+      });
+    });
+  }
 	getLastRecord().then(function(rows){
-	// console.log(rows)
-		for (var i = 0; i < Object.keys(rows).length; ++i)
-		{
-			console.log(rows[i].id)
-			// sleep(500)
-<<<<<<< HEAD
-			var req = http.get('http://127.0.0.1:3000/match/' + rows[i].id, function(response) {
+  // console.log(rows)
+    for (var i = 0; i < Object.keys(rows).length; ++i)
+    {
+      console.log(rows[i].id)
+      // sleep(500)
+      var req = http.get('http://127.0.0.1:3000/match/update' + rows[i].id, function(response) {
 
-=======
-			var req = http.get('http://127.0.0.1:3000/match/update' + rows[i].id, function(response) {
-				
->>>>>>> 31dd8de7bc5d2bfb29d120b164680ea243022990
-			});
-			req.on('error',function(err){
-				console.log("pas de matchs pour cette equipe");
-			 });
-			// setTimeout(function(){goReq(i);}, 500)
-			// var goReq = function(number)
-			// {
-				// console.log('http://127.0.0.1:3000/match/' + number)
-				// http.get('http://127.0.0.1:3000/match/' + number, function(response) {
-					// console.log("success")
-					// console.log('Status:', response.statusCode);
-					// console.log('Headers: ', response.headers);
-					// response.pipe(process.stdout);
-				// });
-			// }
+      });
+      req.on('error',function(err){
+        console.log("pas de matchs pour cette equipe");
+       });
+      // setTimeout(function(){goReq(i);}, 500)
+      // var goReq = function(number)
+      // {
+        // console.log('http://127.0.0.1:3000/match/' + number)
+        // http.get('http://127.0.0.1:3000/match/' + number, function(response) {
+          // console.log("success")
+          // console.log('Status:', response.statusCode);
+          // console.log('Headers: ', response.headers);
+          // response.pipe(process.stdout);
+        // });
+      // }
 
-			// request('http://127.0.0.1:3000/match/' + 18).then(function(response){
-			// console.log(response);})
+      // request('http://127.0.0.1:3000/match/' + 18).then(function(response){
+      // console.log(response);})
 
-		}
+    }
 
-	});
-	res.send('Done');
+  });
+  res.send('Done');
 });
 
 
