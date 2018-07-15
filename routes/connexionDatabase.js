@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 var connection;
-var devMod=1
+var devMod=0
 if (devMod===1)
 {
 	connection = mysql.createConnection({

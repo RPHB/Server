@@ -19,6 +19,23 @@ router.get('/getUser/:id', function(request, res, next) {
 	}
 	getLastRecord(id).then(function(rows){ res.send(rows); });
 });
+router.get('/getTokens/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select tokens from users where id='"+id+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+	  });
+	}
+	getLastRecord(id).then(function(rows){
+	// console.log(rows[0].tokens)
+	// res.send(rows[0].tokens)
+	res.send(rows[0])
+	});
+});
 //get id from name
 router.get('/getUserId/:username', function(request, res, next) {
 	var username = request.params.username;
@@ -112,6 +129,33 @@ router.get('/getAllUser', function(request, res, next) {
 		});
 	}
 	getLastRecord().then(function(rows){ res.send(rows); });
+});
+router.get('/bestPlayers', function(request, res, next) {
+
+	function getLastRecord() {
+		return new Promise(function(resolve, reject) {
+			var sql = "SELECT id, username, tokens FROM users ORDER BY `tokens` DESC limit 5;";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord().then(function(rows){
+		var teamListJSON = rows
+		var teamListJSONSize = teamListJSON.length
+		var resultJson = "{"
+		for (var i = 0; i < teamListJSONSize; ++i)
+		{
+			// console.log(JSON.stringify(teamListJSON[i]))
+			resultJson+='"child'+i+'":' + JSON.stringify(teamListJSON[i]) + ",";
+
+		}
+		resultJson+='"length":'+teamListJSONSize;
+		resultJson+="}";
+		res.send(resultJson);
+	
+	});
 });
 
 router.get('/resetCoin/:id', function(request, res, next) {
