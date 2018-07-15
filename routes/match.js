@@ -11,6 +11,57 @@ var con = require('./connexionDatabase.js');
 // var sleep = require('sleep');
 // var sleep = require('system-sleep');
 
+/* POST create sport */
+router.post('/create/:idTeam1/:idTeam2/:date/:quotation1/:quotation2/:quotation3/:sport/:idEvent', function(request, res, next) {
+	var idTeam1 = request.params.idTeam1;
+	var idTeam2 = request.params.idTeam2;
+	var date = request.params.date;
+	var quotation1 = request.params.quotation1;
+	var quotation2 = request.params.quotation2;
+	var quotation3 = request.params.quotation3;
+	var sport = request.params.sport;
+	var idEvent = request.params.idEvent;
+	function getLastRecord(idTeam1, idTeam2, date, quotation1, quotation2, quotation3, sport, idEvent){
+		return new Promise(function(resolve, reject) {
+			var sql = "insert into matchs(idTeam1, idTeam2, date, quotation1, quotation2, quotation3, score, result, sport, idEvent) values('"+idTeam1+"', '"+idTeam2+"', '" + date + "','"+quotation1+"', '"+quotation2+"', '"+quotation3+"', '-', '3', '"+sport+"', '"+idEvent+"');";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+	}
+	getLastRecord(idTeam1, idTeam2, date, quotation1, quotation2, quotation3, sport, idEvent).then(function(rows){ res.send(rows); });
+});
+
+/* UPDATE sport with id */
+router.put('/update/:id/:idTeam1/:idTeam2/:date/:quotation1/:quotation2/:quotation3/:sport/:idEvent/:score', function(request, res, next) {
+	var id = request.params.id;
+	var idTeam1 = request.params.idTeam1;
+	var idTeam2 = request.params.idTeam2;
+	var quotation1 = request.params.quotation1;
+	var quotation2 = request.params.quotation2;
+	var quotation3 = request.params.quotation3;
+	var score = request.params.score;
+	var sport = request.params.sport;
+	var idEvent = request.params.idEvent;
+	var date = request.params.date;
+	var result;
+	if(score.split('-')[0] == score.split('-')[1]) result = 1;
+	if(score.split('-')[0] > score.split('-')[1]) result = 0;
+	if(score.split('-')[0] < score.split('-')[1]) result = 2
+	;
+	function getLastRecord(id, idTeam1, idTeam2, quotation1, quotation2, quotation3, sport, idEvent, score) {
+		return new Promise(function(resolve, reject) {
+			var sql = "update matchs set idTeam1='"+idTeam1+"', idTeam2='"+idTeam2+"', date='"+date+"', quotation1='"+quotation1+"', quotation2='"+quotation2+"', quotation3='"+quotation3+"', score='"+score+"', result='"+result+"', sport='"+sport+"', idEvent='"+idEvent+"' where id = "+id+";";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			  });
+			});
+	}
+	getLastRecord(id, idTeam1, idTeam2, quotation1, quotation2, quotation3, sport, idEvent, score).then(function(rows){ res.send(rows); });
+});
+
 
 /* GET all sport */
 router.get('/getAll', function(request, res, next) {
@@ -45,8 +96,8 @@ router.get('/getFavoriteMatchs', function(request, res, next) {
 				matchList+=rows[i].idmatch + ',';
 			}
 			matchList=matchList.substring(0,matchList.length - 1);
-			
-			
+
+
 			var sql = "select * from matchs where id in ("+matchList+");";
 			console.log(sql)
 			con.query(sql, function (err, rows, fields) {
@@ -56,14 +107,14 @@ router.get('/getFavoriteMatchs', function(request, res, next) {
 		});
 	}
 	getFavoriteMatchsId().then(function(rows){
-			
+
 		getMatchInfo(rows).then(function(rows){
-		
+
 			res.send(rows);
-	
+
 		});
-			
-		
+
+
 	});
 });
 
@@ -84,7 +135,7 @@ router.get('/updateMatch', function(request, res, next) {
 			console.log(rows[i].id)
 			// sleep(500)
 			var req = http.get('http://127.0.0.1:3000/match/' + rows[i].id, function(response) {
-				
+
 			});
 			req.on('error',function(err){
 				console.log("pas de matchs pour cette equipe");
@@ -100,12 +151,12 @@ router.get('/updateMatch', function(request, res, next) {
 					// response.pipe(process.stdout);
 				// });
 			// }
-			
+
 			// request('http://127.0.0.1:3000/match/' + 18).then(function(response){
 			// console.log(response);})
-			
+
 		}
-	
+
 	});
 	res.send('Done');
 });
@@ -136,7 +187,7 @@ router.get('/updateTeamList', function(req, res, next) {
 		var team = teamListJSON[i].child["0"].text
 		checkTeamExist(value, team).then(function(rows, t, v){
 		});
-		
+
 	}
 	resultJson+='"length":'+teamListJSONSize;
 	resultJson+="}";
@@ -154,7 +205,7 @@ router.get('/:team_id', function(req, res, next) {
 				// console.log("'" + a + "' est un chiffre")
 				return true;
 			}
-				
+
 			return false;
 		}
 		for (var i = 0; i < str.length; ++i)
@@ -164,14 +215,14 @@ router.get('/:team_id', function(req, res, next) {
 				// console.log("'"+str+"' contient un nombre '" + str[i]+"'")
 				return true;
 			}
-				
+
 		}
 		// console.log("'"+str+"' contient pas de nombre")
 		return false;
 	}
 	function checkMatchExist(id1, id2,d,score) {
 		return new Promise(function(resolve, reject) {
-			
+
 			var date = d.substring(d.indexOf(" ") + 1);
 			date = date.substring(0, date.indexOf(" "));
 			var jour=date.substring(0, 2);
@@ -189,7 +240,7 @@ router.get('/:team_id', function(req, res, next) {
 			{
 				result=0;
 			}
-			
+
 		   // var sql = "insert into matchs (idTeam1, idTeam2, date, score, result) values(select id from teams where name='"+nomTeam1+"',select id from teams where name='"+nomTeam2+"','"+date+"','"+score+"', 0);";
 			var sql = "insert into matchs (idTeam1, idTeam2, date, score, result) values ('"+id1+"','"+id2+"','"+date+"','"+score+"','"+result+"') on duplicate key update score='"+score+"', result='"+result+"';";
 			// console.log(sql);
@@ -249,10 +300,10 @@ router.get('/:team_id', function(req, res, next) {
 							// console.log(rows)
 							if (!rows || !rows[0] || !rows[1])
 							{
-								
+
 								return;
-								
-								
+
+
 							}
 							var t1 = rows[0].name;
 							var t2 = rows[1].name;
@@ -260,7 +311,7 @@ router.get('/:team_id', function(req, res, next) {
 							var id2 = rows[1].id;
 							var date = rows[1].date;
 							var score = rows[1].score;
-							
+
 							// console.log(t1 + " " + t2 + " " + id1 + " " + id2)
 							if (t2 < t1)
 							{
@@ -294,6 +345,9 @@ router.get('/:team_id', function(req, res, next) {
 		// console.log(result);
 		res.send(result);
 	})
+
+
+
 
 });
 
