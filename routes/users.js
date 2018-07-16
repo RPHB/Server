@@ -58,11 +58,11 @@ router.get('/getUserId/:username', function(request, res, next) {
 	});
 
 });
-router.get('/resetPwd/:email', function(request, res, next) {
-	var email = request.params.email;
-	function getLastRecord(email) {
+router.get('/resetPwd/:pseudo', function(request, res, next) {
+	var pseudo = request.params.pseudo;
+	function getLastRecord(pseudo) {
 		return new Promise(function(resolve, reject) {
-			var sql = "select id, email from users where email='"+email+"';";
+			var sql = "select id, email from users where username='"+pseudo+"';";
 			con.query(sql, function (err, rows, fields) {
 				if (err) return reject(err);
 				resolve(rows);
@@ -81,7 +81,7 @@ router.get('/resetPwd/:email', function(request, res, next) {
 			});
 	  });
 	}
-	getLastRecord(email).then(function(rows){
+	getLastRecord(pseudo).then(function(rows){
 		if (!rows["0"])
 		{
 			res.send("falseUser")
