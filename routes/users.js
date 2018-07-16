@@ -19,6 +19,32 @@ router.get('/getUser/:id', function(request, res, next) {
 	}
 	getLastRecord(id).then(function(rows){ res.send(rows); });
 });
+router.get('/getUserInfo/:id', function(request, res, next) {
+	var id = request.params.id;
+	function getLastRecord(id) {
+		return new Promise(function(resolve, reject) {
+			var sql = "select * from users where id='"+id+"';";
+			con.query(sql, function (err, rows, fields) {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+	  });
+	}
+	getLastRecord(id).then(function(rows){ 
+		var teamListJSON = rows
+		var teamListJSONSize = teamListJSON.length
+		var resultJson = "{"
+		for (var i = 0; i < teamListJSONSize; ++i)
+		{
+			// console.log(JSON.stringify(teamListJSON[i]))
+			resultJson+='"child'+i+'":' + JSON.stringify(teamListJSON[i]) + ",";
+
+		}
+		resultJson+='"length":'+teamListJSONSize;
+		resultJson+="}";
+		res.send(resultJson);
+	});
+});
 router.get('/getTokens/:id', function(request, res, next) {
 	var id = request.params.id;
 	function getLastRecord(id) {
